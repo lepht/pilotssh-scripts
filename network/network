@@ -1,0 +1,62 @@
+#!/usr/bin/python
+try:
+    import netifaces, sys
+except ImportError:
+    print '{ "version": 1, "title": "Network", "type":"status", "status":"error", "message":"Please install the netifaces Python module to use this script" }'
+    exit()
+
+def command_from_interface(intf):
+    ifaddresses = netifaces.ifaddresses(intf)
+    result = []
+    for key in ifaddresses.keys():
+        info = ifaddresses[key]
+        for index in info:
+            result.append('{ "name" : "' + intf + '", "value" : "'+ index["addr"] + '", "command" : ".pilotssh/network/network ' + intf + '" }')
+    return result
+
+def index():
+    result = '{ "version": 1, "title": "Network Interfaces", "type":"commands", "values" : [ '
+    interfaces = netifaces.interfaces()
+    length = len(interfaces)
+
+    res = []
+    if(length >= 1):
+        res += command_from_interface(interfaces[0])
+
+    if(length > 1):
+        for i in xrange(1, length):
+            res += command_from_interface(interfaces[i])
+
+    result += ', '.join(res)
+    result += ' ] }'
+
+    print result
+
+def command_from_key_value(key, value):
+    return '{ "name" : "' + key + '", "value" : "'+ value + '", "command" : "" }'
+
+def interface_info(intf):
+    result = '{ "version": 1, "title": "' + intf + '", "type":"commands", "values" : [ '
+
+    af_inet = netifaces.ifaddresses(intf)[netifaces.AF_INET][0]
+    address = af_inet["addr"]
+    result += command_from_key_value("IP", address)
+
+    if "broadcast" in af_inet:
+        broadcast = af_inet["broadcast"]
+        result += ', ' + command_from_key_value("Broadcast", broadcast)
+
+    netmask = af_inet["netmask"]
+    result += ', ' + command_from_key_value("Netmask", netmask)
+
+    mac = netifaces.ifaddresses(intf)[netifaces.AF_LINK][0]["addr"]
+    result += ', ' + command_from_key_value("MAC", mac)
+
+    result += ' ] }'
+    return result
+
+
+if(len(sys.argv) == 1):
+    index()
+else:
+    print interface_info(sys.argv[1])

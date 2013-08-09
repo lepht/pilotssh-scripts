@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo '{ "version": 1, "title": "Commands", "type":"commands", "values" : [{"name":"DNS", "value":"", "command":".pilotssh/dns/dns", "query":"Enter a domain" }, {"name":"Logs", "value":"", "command":".pilotssh/logs/logs"}, {"name":"Network", "value":"", "command":".pilotssh/network/network"}, {"name":"Power", "value":"", "command":".pilotssh/power/power"}, {"name":"Process", "value":"", "command":".pilotssh/process/process"}, {"name":"System", "value":"", "command":".pilotssh/system/system"},
+    {"name":"Packages","value":"", "command":".pilotssh/packages/packages/"}
+ ]}'
+
